@@ -26,89 +26,106 @@
 
     <div class="row">
         <div class="col-sm-8" style="background-color:lavender;">
-            <div id="sports-view"></div>
+            <div id="emotions-view"></div>
         </div>
         <div class="col-sm-4" style="background-color:lavenderblush;">
     
-            <form id="sport-form">
-            <label for="sport-input">Add a Favorite Sport</label>
-            <input type="text" id="sport-input"><br>
-            <input id="add-sport" type="submit" value="Add a Favorite Sport">
+            <form id="emotion-form">
+            <label for="emotion-input">Add a Desired Emotion</label>
+            <input type="text" id="emotion-input"><br>
+            <input id="add-emotion" type="submit" value="Add a Desired Emotion">
             </form>
         </div>
     </div>
 </div>
 
-
-
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type="text/javascript">
-      // Initial array of sports
-      var sports = ["Soccer", "Basketball", "Swimming", "Baseball"];
 
-      // Function for dumping the JSON content for each button into the div
-      function displaySportInfo() {
+    // Initial array of emotions
+    var emotions = ["Happy", "Sad", "Nervous", "Bored"];
 
-        var sport = $(this).attr("data-name");
-        var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=PU4MmUDWOgeePvN2qvTj6Lgb10AcY1hd&q=" + sport + "&limit=10&offset=0&rating=G&lang=en"
+    // Function for display Emotion
+    function displayEmotionInfo() {
 
-        // "https://api.giphy.com/v1/" + sport + "PU4MmUDWOgeePvN2qvTj6Lgb10AcY1hd";
-        
-        $.ajax({
-          url: queryURL,
-          method: "GET"
-        }).then(function(response) {
-          $("#sports-view").text(JSON.stringify(response));
-        });
+      var emotion= $(this).attr("data-name");
+      var queryURL =  "https://api.giphy.com/v1/gifs/search?q=" +
+      emotion + "&api_key=dc6zaTOxFJmzC&limit=5";
+      
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      })
+
+      .then(function(response) {
+        $("#emotions-view").empty();
+
+      var results = response.data;
+
+      for (var i = 0; i < results.length; i++) {
+        var gifDiv = $("<div>");
+
+        var rating = results[i].rating;
+        var p = $("<p>").text("Rating: " + rating);
+
+        var emotionImage = $("<img>");
+        emotionImage.attr("src", results[i].images.fixed_height.url);
+
+        gifDiv.prepend(p);
+        gifDiv.prepend(emotionImage);
+
+        $("#emotions-view").prepend(gifDiv);
+      }       
+      });
+    }
+
+    // Function for displaying emotion data
+    function renderButtons() {
+
+      // Deleting the buttons prior to adding new emotions
+      $("#buttons-view").empty();
+
+      // Looping through the array of emotions
+      for (var i = 0; i < emotions.length; i++) {
+
+        // Then dynamically generating buttons for each emotion in the array
+        // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
+        var a = $("<button>");
+        // Adding a class of emotion to our button
+        a.addClass("emotion");
+        // Adding a data-attribute
+        a.attr("data-name", emotions[i]);
+        // Providing the initial button text
+        a.text(emotions[i]);
+        // Adding the button to the buttons-view div
+        $("#buttons-view").append(a);
+      } 
       }
-
-      // Function for displaying sport data
-      function renderButtons() {
-
-        // Deleting the buttons prior to adding new sports
-        // (this is necessary otherwise you will have repeat buttons)
-        $("#buttons-view").empty();
-
-        // Looping through the array of sports
-        for (var i = 0; i < sports.length; i++) {
-
-          // Then dynamically generating buttons for each sport in the array
-          // This code $("<button>") is all jQuery needs to create the beginning and end tag. (<button></button>)
-          var a = $("<button>");
-          // Adding a class of sport to our button
-          a.addClass("sport");
-          // Adding a data-attribute
-          a.attr("data-name", sports[i]);
-          // Providing the initial button text
-          a.text(sports[i]);
-          // Adding the button to the buttons-view div
-          $("#buttons-view").append(a);
-        }
-      }
-
+  
       // This function handles events where one button is clicked
-      $("#add-sport").on("click", function(event) {
+      $("#add-emotion").on("click", function(event) {
         event.preventDefault();
 
         // This line grabs the input from the textbox
-        var sport = $("#sport-input").val().trim();
+        var emotion = $("#emotion-input").val().trim();
 
-        // Adding the sport from the textbox to our array
-        sports.push(sport);
-        console.log(sports);
+        // Adding the emotion from the textbox to our array
+        emotions.push(emotion);
+        console.log(emotions);
 
-        // Calling renderButtons which handles the processing of our sport array
+        // Calling renderButtons which handles the processing of our emotion array
         renderButtons();
       });
 
-      // Function for displaying the sport info
-      // Using $(document).on instead of $(".sport").on to add event listeners to dynamically generated elements
-      $(document).on("click", ".sport", displaySportInfo);
+      // Function for displaying the emotion info
+      // Using $(document).on instead of $(".emotion").on to add event listeners to dynamically generated elements
+      $(document).on("click", ".emotion", displayEmotionInfo);
 
-      // Calling the renderButtons function to display the initial buttons
+      // // Calling the renderButtons function to display the initial buttons
       renderButtons();
-    </script>
+      
+  
+  </script>
   </div>
 </body>
 
